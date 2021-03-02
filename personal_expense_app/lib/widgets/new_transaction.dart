@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:personal_expense_app/models/transaction.dart';
 
-
 class NewTransaction extends StatelessWidget {
-
+  final Function addTx;
   final titleController = TextEditingController();
   final amountControlller = TextEditingController();
 
-
+  NewTransaction(this.addTx);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,6 @@ class NewTransaction extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(10),
         child: Column(
-
           children: [
             TextField(
               decoration: InputDecoration(
@@ -26,12 +24,9 @@ class NewTransaction extends StatelessWidget {
 //                      onChanged: (value){
 //                        this.titleInput = value;
 //                      },
-
             ),
             TextField(
-              decoration: InputDecoration(
-                  labelText: 'Amount'
-              ),
+              decoration: InputDecoration(labelText: 'Amount'),
               controller: amountControlller,
 //                      onChanged: (value){
 //                        this.amountInput = value;
@@ -41,11 +36,13 @@ class NewTransaction extends StatelessWidget {
               child: Text('Add Transaction'),
               color: Colors.blue,
               textColor: Colors.white,
-              onPressed: (){
-
+              onPressed: () {
+                addTx(
+                  titleController.text,
+                  double.parse(amountControlller.text),
+                );
               },
             ),
-
           ],
         ),
       ),

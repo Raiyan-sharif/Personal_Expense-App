@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:personal_expense_app/widgets/chart.dart';
 import 'package:personal_expense_app/widgets/new_transaction.dart';
 import 'package:personal_expense_app/widgets/transaction_list.dart';
 
 import 'models/transaction.dart';
 
-
 void main() {
+//  WidgetsFlutterBinding.ensureInitialized();
+//  SystemChrome.setPreferredOrientations(
+//      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MaterialApp(
     title: 'Personal Expenses',
     theme: ThemeData(
@@ -15,22 +18,18 @@ void main() {
       fontFamily: 'Quicksand',
       appBarTheme: AppBarTheme(
         textTheme: ThemeData.light().textTheme.copyWith(
-        title: TextStyle(
-          fontFamily: 'OpenSans',
-          fontSize: 20,
-          fontWeight: FontWeight.bold
-        )
-      ),),
-
+            title: TextStyle(
+                fontFamily: 'OpenSans',
+                fontSize: 20,
+                fontWeight: FontWeight.bold)),
+      ),
     ),
     home: MyApp(),
-  )
-  );
+  ));
+
 }
 
 class MyApp extends StatefulWidget {
-
-
 //  String titleInput;
 //  String amountInput;
   @override
@@ -41,7 +40,6 @@ class _MyAppState extends State<MyApp> {
 //  final titleController = TextEditingController();
 //
 //  final amountControlller = TextEditingController();
-
 
   final List<Transaction> _userTransactions = [
 //    Transaction(
@@ -58,75 +56,88 @@ class _MyAppState extends State<MyApp> {
 //    ),
   ];
 
-  List<Transaction> get _recentTransaction{
-    return _userTransactions.where((element){
-      return element.date.isAfter(DateTime.now().subtract(Duration(days: 7),
+  List<Transaction> get _recentTransaction {
+    return _userTransactions.where((element) {
+      return element.date.isAfter(DateTime.now().subtract(
+        Duration(days: 7),
       ));
     }).toList();
   }
 
-  void _addNewTransaction(String txTitle, double txAmount, DateTime chosenDate) {
+  void _addNewTransaction(
+      String txTitle, double txAmount, DateTime chosenDate) {
     final newTX = Transaction(
         title: txTitle,
         amount: txAmount,
         date: chosenDate,
-        id: DateTime.now().toString()
-    );
+        id: DateTime.now().toString());
     setState(() {
       _userTransactions.add(newTX);
     });
   }
 
-  void deleteTransaction(String id){
+  void deleteTransaction(String id) {
     setState(() {
-      _userTransactions.removeWhere((element)=>element.id == id);
+      _userTransactions.removeWhere((element) => element.id == id);
     });
-
   }
 
-  void _startAddNewTransaction(BuildContext context){
-    showModalBottomSheet(context: context, builder: (context){
-      return GestureDetector(
-        onTap: (){
-
-        },
-        child: NewTransaction(_addNewTransaction),
-        behavior: HitTestBehavior.opaque,
-      );
-    });
+  void _startAddNewTransaction(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return GestureDetector(
+            onTap: () {},
+            child: NewTransaction(_addNewTransaction),
+            behavior: HitTestBehavior.opaque,
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
+    final appbar = AppBar(
+      title: Text(
+        'Personal Expenses',
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        )
+      ],
+    );
     return Scaffold(
-        appBar: AppBar(
-          title:
-          Text(
-            'Personal Expenses',
-          ),
-          actions: [
-            IconButton(icon: Icon(Icons.add), onPressed: () => _startAddNewTransaction(context),
-            )
+      appBar: appbar,
+      body: SingleChildScrollView(
+        child: Column(
+//          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+                height: (MediaQuery.of(context).size.height -
+                        appbar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                child: Chart(_recentTransaction)),
+            Container(
+              height: (MediaQuery.of(context).size.height -
+                      appbar.preferredSize.height -
+                      MediaQuery.of(context).padding.top) *
+                  0.7,
+              child: TransactionList(
+                _userTransactions,
+                deleteTransaction,
+              ),
+            ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-//          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Chart(_recentTransaction),
-
-              TransactionList(_userTransactions,deleteTransaction),
-
-            ],
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: ()=> _startAddNewTransaction(context),
-        ),
-      );
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
+      ),
+    );
   }
 }
-

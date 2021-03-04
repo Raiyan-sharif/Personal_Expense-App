@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:personal_expense_app/widgets/chart.dart';
 import 'package:personal_expense_app/widgets/new_transaction.dart';
 import 'package:personal_expense_app/widgets/transaction_list.dart';
 
@@ -43,19 +44,26 @@ class _MyAppState extends State<MyApp> {
 
 
   final List<Transaction> _userTransactions = [
-    Transaction(
-      id: 't1',
-      title: 'New shoes',
-      amount: 69.99,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'Weekly Groceries',
-      amount: 20.5,
-      date: DateTime.now(),
-    ),
+//    Transaction(
+//      id: 't1',
+//      title: 'New shoes',
+//      amount: 69.99,
+//      date: DateTime.now(),
+//    ),
+//    Transaction(
+//      id: 't2',
+//      title: 'Weekly Groceries',
+//      amount: 20.5,
+//      date: DateTime.now(),
+//    ),
   ];
+
+  List<Transaction> get _recentTransaction{
+    return _userTransactions.where((element){
+      return element.date.isAfter(DateTime.now().subtract(Duration(days: 7),
+      ));
+    }).toList();
+  }
 
   void _addNewTransaction(String txTitle, double txAmount) {
     final newTX = Transaction(
@@ -99,24 +107,7 @@ class _MyAppState extends State<MyApp> {
 //          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                width: double.infinity,
-                child: Card(
-                  color: Theme.of(context).primaryColor,
-
-                  child: Text(
-                    'Chart',
-
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-
-                  elevation: 5,
-                ),
-              ),
+              Chart(_recentTransaction),
 
               TransactionList(_userTransactions),
 
